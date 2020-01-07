@@ -33,7 +33,6 @@
           hover
         ></b-table>
         <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
-        <modelForPendingStatus />
         <!-- <modelForAcceptedStatus /> -->
         <!-- Model code starts here -->
       </b-col>
@@ -141,6 +140,7 @@
   </div>
 </template>
 <script>
+import consola from 'consola'
 // import modelForPendingStatus from './../../../components/manage_requests/modelForPendingStatus'
 // import modelForAcceptedStatus from './../../../components/manage_requests/modelForAcceptedStatus'
 export default {
@@ -153,6 +153,8 @@ export default {
   },
   data() {
     return {
+      sortBy: 'created_At',
+      sortDesc: false,
       headVariant: 'dark',
       selected: [],
       vehicle: '',
@@ -164,18 +166,18 @@ export default {
       rows: 5,
       fields: [
         { key: 'Created_At', sortable: true },
-        'Reach_Time',
+        'Client_Id',
         'Load_Time',
-        'Drop_Time',
-        'Client_Name',
-        'Client_No',
-        'Vehicle_Type',
+        'Request_Date',
         'Origin',
         'Destination',
-        'Distance',
-        'Duration',
+        'Is_Hire',
+        'Vehicle_Id',
+        'Price',
+        'Commission',
         'Status'
       ],
+
       items: [
         {
           Created_At: '10-12-2019',
@@ -236,6 +238,21 @@ export default {
       ]
     }
   },
+  computed: {
+    rowss() {
+      return this.items.length
+    },
+    itemss() {
+      return this.$store.state.NewJobs
+    }
+    // return() {
+    //   Commission_Price = (10 / 100) * price
+    // }
+  },
+  // beforeCreate() {
+  //   this.$store.dispatch('get_new_jobs')
+  //   consola.info('Before Create')
+  // },
   mounted() {
     // Set the initial number of items
     this.totalRows = this.items.length

@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <h5 class="card-header text-left">Add Vehicle</h5>
+    <h5 class="card-header text-left">{{ IsCreating() == 'false' ? 'Add Vehicle' : 'Edit Vehicle' }}</h5>
     <div class="card-body">
       <form @submit.prevent="submitForm">
         <div class="form-row">
@@ -13,7 +13,11 @@
                 'is-invalid': $v.vehicleType.$error,
                 'is-valid': !$v.vehicleType.$invalid
               }"
-            />
+            >
+              <option v-for="(make, index) in list" :key="index" v-bind:value="index">
+                {{ make.name }}
+              </option>
+            </select>
             <div class="valid-feedback">Your vehicle type is valid!</div>
             <div class="invalid-feedback">
               <span v-if="!$v.vehicleType.required">Vehicle type is required</span>
@@ -50,6 +54,8 @@
 </template>
 <script>
 import { required, numeric, url } from 'vuelidate/lib/validators'
+import consola from 'consola'
+
 export default {
   data() {
     return {
@@ -59,6 +65,15 @@ export default {
       vehicleMake: '',
       submitstatus: null
     }
+  },
+  computed: {
+    list() {
+      consola.success(this.$store.state.VechilesList)
+      return this.$store.state.VechilesList
+    }
+  },
+  created() {
+    this.$store.dispatch('get_VechilesList')
   },
   validations: {
     vehicleType: {
@@ -74,8 +89,26 @@ export default {
       if (this.$v.$invalid) {
         this.submitstatus = 'Fail'
       } else {
+        consola.success({
+          vehicleId: this.vehicleType,
+          name: this.list[this.vehicleType].name,
+          v_number: this.vehicleNumber,
+          v_model: this.vehicleModel,
+          v_make: this.vehicleMake
+        })
+        this.$store.dispatch('add_vehicle', {
+          vehicleId: this.vehicleNumber,
+          name: this.list[this.vehicleType].name,
+          v_number: this.vehicleNumber,
+          v_model: this.vehicleModel,
+          v_make: this.vehicleMake
+        })
         this.submitstatus = 'Success'
+        // location.href = 'http://localhost:3000/vendor/vehicles'
       }
+    },
+    IsCreating() {
+      return this.$route.params.id ? 'true' : 'false'
     }
   }
 }

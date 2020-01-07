@@ -8,14 +8,27 @@
       <span class="logo_title mt-5">Login</span>
     </div>
     <div class="card-body">
-      <form action method="post">
+      <form @submit.prevent="Login" action method="post">
         <div class="input-group form-group">
           <div class="input-group-prepend">
             <span class="input-group-text">
               <fa :icon="['fas', 'user']" />
             </span>
           </div>
-          <input @keyup.enter="Login" v-model.trim="email" name="email" type="text" class="form-control" placeholder="Email" />
+          <input
+            @keyup.enter="Login"
+            v-model.trim="$v.email.$model"
+            :class="{
+              'is-invalid': $v.email.$error
+            }"
+            name="email"
+            type="text"
+            class="form-control"
+            placeholder="Email"
+          />
+          <div class="invalid-feedback">
+            <span v-if="!$v.email.required">Email is required</span>
+          </div>
         </div>
 
         <div class="input-group form-group">
@@ -24,7 +37,20 @@
               <fa :icon="['fas', 'key']" />
             </span>
           </div>
-          <input @keyup.enter="Login" v-model="password" name="password" type="password" class="form-control" placeholder="Password" />
+          <input
+            @keyup.enter="Login"
+            v-model.trim="$v.password.$model"
+            :class="{
+              'is-invalid': $v.password.$error
+            }"
+            name="password"
+            type="password"
+            class="form-control"
+            placeholder="Password"
+          />
+          <div class="invalid-feedback">
+            <span v-if="!$v.password.required">Password is required</span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -36,6 +62,7 @@
 </template>
 <script>
 import consola from 'consola'
+import { required, numeric, url } from 'vuelidate/lib/validators'
 export default {
   name: 'Login',
   layout: 'login',
@@ -46,8 +73,22 @@ export default {
       password: ''
     }
   },
+  validations: {
+    email: {
+      required
+    },
+    password: {
+      required
+    }
+  },
   methods: {
     Login(p) {
+      this.$v.$touch()
+      if (this.$v.$invalid) {
+        this.submitstatus = 'Fail'
+      } else {
+        this.submitstatus = 'Success'
+      }
       const { email, password, $store: store } = this
       store
         .dispatch('signIn', { email, password, type: 'vendor' })
@@ -70,6 +111,7 @@ body {
 }
 .card-login {
   margin-top: 130px;
+  margin-left: 500px !important;
   padding: 18px;
   max-width: 30rem;
 }

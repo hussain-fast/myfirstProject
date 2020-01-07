@@ -11,8 +11,7 @@
               class="form-control"
               v-model.trim="$v.firstname.$model"
               :class="{
-                'is-invalid': $v.firstname.$error,
-                'is-valid': $v.firstname.$invalid
+                'is-invalid': $v.firstname.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -27,8 +26,7 @@
               class="form-control"
               v-model.trim="$v.lastname.$model"
               :class="{
-                'is-invalid': $v.lastname.$error,
-                'is-valid': $v.lastname.$invalid
+                'is-invalid': $v.lastname.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -43,8 +41,7 @@
               class="form-control"
               v-model.trim="$v.email.$model"
               :class="{
-                'is-invalid': $v.email.$error,
-                'is-valid': $v.email.$invalid
+                'is-invalid': $v.email.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -59,8 +56,7 @@
               class="form-control"
               v-model.trim="$v.password.$model"
               :class="{
-                'is-invalid': $v.password.$error,
-                'is-valid': $v.password.$invalid
+                'is-invalid': $v.password.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -75,8 +71,7 @@
               class="form-control"
               v-model.trim="$v.mobileNo.$model"
               :class="{
-                'is-invalid': $v.mobileNo.$error,
-                'is-valid': $v.mobileNo.$invalid
+                'is-invalid': $v.mobileNo.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -91,8 +86,7 @@
               class="form-control"
               v-model.trim="$v.cnicNo.$model"
               :class="{
-                'is-invalid': $v.cnicNo.$error,
-                'is-valid': $v.cnicNo.$invalid
+                'is-invalid': $v.cnicNo.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -107,8 +101,7 @@
               class="form-control"
               v-model.trim="$v.drivingLicenceNo.$model"
               :class="{
-                'is-invalid': $v.drivingLicenceNo.$error,
-                'is-valid': $v.drivingLicenceNo.$invalid
+                'is-invalid': $v.drivingLicenceNo.$error
               }"
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
@@ -122,10 +115,13 @@
               class="form-control"
               v-model.trim="$v.vehicleType.$model"
               :class="{
-                'is-invalid': $v.vehicleType.$error,
-                'is-valid': !$v.vehicleType.$invalid
+                'is-invalid': $v.vehicleType.$error
               }"
-            />
+            >
+              <option v-for="(make, index) in list" :key="index" v-bind:value="index">
+                {{ make.name }}
+              </option>
+            </select>
             <div class="valid-feedback">Your vehicle type is valid!</div>
             <div class="invalid-feedback">
               <span v-if="!$v.vehicleType.required">Vehicle type is required</span>
@@ -137,10 +133,13 @@
               class="form-control"
               v-model.trim="$v.adda.$model"
               :class="{
-                'is-invalid': $v.adda.$error,
-                'is-valid': !$v.adda.$invalid
+                'is-invalid': $v.adda.$error
               }"
-            />
+            >
+              <option v-for="(make, index) in adda_list" :key="index" v-bind:value="index">
+                {{ make.adda }}
+              </option>
+            </select>
             <div class="valid-feedback">Your adda name is valid!</div>
             <div class="invalid-feedback">
               <span v-if="!$v.vehicleType.required">Adda is required</span>
@@ -186,6 +185,7 @@
 </template>
 <script>
 import { required, numeric, url } from 'vuelidate/lib/validators'
+import consola from 'consola'
 export default {
   data() {
     return {
@@ -199,6 +199,15 @@ export default {
       vehicleType: '',
       adda: '',
       submitstatus: null
+    }
+  },
+  computed: {
+    list() {
+      consola.success(this.$store.state.VechilesList)
+      return this.$store.state.VechilesList
+    },
+    adda_list() {
+      return this.$store.state.adda_list
     }
   },
   validations: {
@@ -236,9 +245,42 @@ export default {
       if (this.$v.$invalid) {
         this.submitstatus = 'Fail'
       } else {
+        consola.success({
+          first_name: this.firstname,
+          last_name: this.lastname,
+          email: this.email,
+          password: this.password,
+          mob_no: this.mobileNo,
+          cnic_no: this.cnicNo,
+          driving_license: this.drivingLicenceNo,
+          vehicle: this.list[this.vehicleType].name,
+          adda_ref: this.adda
+        })
+        this.$store.dispatch('add_driver', {
+          first_name: this.firstname,
+          last_name: this.lastname,
+          email: this.email,
+          password: this.password,
+          mob_no: this.mobileNo,
+          cnic_no: this.cnicNo,
+          driving_license: this.drivingLicenceNo,
+          vehicle: this.vehicleType,
+          adda_ref: this.adda
+        })
         this.submitstatus = 'Success'
       }
     }
+  },
+  add_driver({ commit }, data) {
+    alert(data)
+    return new Promise((resolve, reject) => {
+      this.$axios
+        .post('https://localhost:4443/test/add_vendor_driver', data)
+        .then(({ data }) => {
+          consola.success(data)
+        })
+        .catch(reject)
+    })
   }
 }
 </script>

@@ -38,6 +38,7 @@
   </div>
 </template>
 <script>
+import consola from 'consola'
 export default {
   name: 'Vendor',
   layout: 'vendor',
@@ -101,6 +102,18 @@ export default {
       ]
     }
   },
+  computed: {
+    rowss() {
+      return this.itens.length
+    },
+    itemss() {
+      return this.$store.state.Accounts
+    }
+  },
+  // beforeCreate() {
+  //   this.$$store.dispatch('get_all_account')
+  //   consola.info('Before Create')
+  // },
   mounted() {
     // Set the initial number of items
     this.totalRows = this.items.length

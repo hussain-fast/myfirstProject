@@ -37,6 +37,7 @@
   </div>
 </template>
 <script>
+import consola from 'consola'
 export default {
   name: 'Vendor',
   layout: 'vendor',
@@ -115,6 +116,18 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    rowss() {
+      return this.itemss.length
+    },
+    itemss() {
+      return this.$store.state.AllJobs
+    }
+  },
+  beforeCreate() {
+    this.$store.dispatch('get_all_jobs')
+    consola.info('Before Create')
   },
   mounted() {
     // Set the initial number of items
