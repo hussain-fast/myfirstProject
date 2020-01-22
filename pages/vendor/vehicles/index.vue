@@ -48,7 +48,7 @@
               <toggle-button :value="true" sync="true" @change="rowClick(row.item)"></toggle-button>
             </div>
             <div v-if="row.item.availability == false">
-              <toggle-button :value="false" sync="true" @change="rowClick(row.item.availability)"></toggle-button>
+              <toggle-button :value="false" sync="true" @change="rowClick(row.item)"></toggle-button>
             </div>
           </template>
           <template v-slot:cell(selected)="{ rowSelected }">
@@ -86,11 +86,38 @@
           </b-col>
           <b-col sm="6">
             <b-form-group description="Select Destination">
-              <b-form-select v-model="Destination" :options="destinationOptions" size="sm"></b-form-select>
+              <b-form-select
+                v-model.trim="$v.Destination.$model"
+                :class="{
+                  'is-invalid': $v.Destination.$error
+                }"
+                :options="destinationOptions"
+                size="sm"
+              ></b-form-select>
+              <div class="invalid-feedback">
+                <span v-if="!$v.Destination.required">Vehicle Destination is required</span>
+              </div>
             </b-form-group>
           </b-col>
           <b-col sm="6">
-            <b-form-group description="Select driver">
+            <select
+              class="form-control"
+              v-model.trim="$v.Driver_Name.$model"
+              :class="{
+                'is-invalid': $v.Driver_Name.$error,
+                'is-valid': !$v.Driver_Name.$invalid
+              }"
+            >
+              <option value="">Select Driver</option>
+              <option v-for="(make, index) in list" :key="index" v-bind:value="index">
+                {{ make.first_name + '  ' + make.last_name }}
+              </option>
+            </select>
+            <div class="valid-feedback">Your driver is valid!</div>
+            <div class="invalid-feedback">
+              <span v-if="!$v.Driver_Name.required">Driver is required</span>
+            </div>
+            <!-- <b-form-group description="Select driver">
               <b-form-select
                 id="Driver_Name"
                 v-model.trim="$v.Driver_Name.$model"
@@ -99,11 +126,13 @@
                 }"
                 :options="list"
                 size="sm"
-              ></b-form-select>
+              >
+                <b-form-select-option v-for="(make, index) in list" :key="index" v-bind:value="index">{{ make.first_name }}</b-form-select-option>
+              </b-form-select>
               <div class="invalid-feedback">
                 <span v-if="!$v.Driver_Name.required">Driver Name is required</span>
               </div>
-            </b-form-group>
+            </b-form-group> -->
           </b-col>
           <b-col sm="6">
             <b-form-group description="Enter Price">
@@ -142,6 +171,7 @@
 <script>
 import consola from 'consola'
 import { required, numeric, url } from 'vuelidate/lib/validators'
+import { auth, DB } from '~/plugins/firebase.js'
 import cities from '~/assets/cities.json'
 export default {
   name: 'Vendor',
@@ -150,6 +180,7 @@ export default {
   // selectMode: ['multi'],
   data() {
     return {
+      // Vehicle_Name: this.list[this.Driver_Name].name,
       sortBy: 'created_At',
       sortDesc: false,
       statusToggle: false,
@@ -233,9 +264,9 @@ export default {
     }
   },
   computed: {
-    // Instead of VechilesList , VendorDriversList will be used
+    // Instead of VechilesList , VendorDriversList will be used.... VendorDriversList
     list() {
-      consola.success('HII' + this.$store.state.VendorDriversList)
+      consola.success(this.$store.state.VendorDriversList)
       return this.$store.state.VendorDriversList
     },
     rows() {
@@ -284,18 +315,23 @@ export default {
         consola.success({
           origin: this.Origin,
           destination: this.Destination,
-          driverId: this.Driver_Name,
+          driverId: this.list[this.Driver_Name].key, // $('#elementId :selected').val(),
           price: this.Price,
-          vehicleId: 'ket-123456' // this.vehicle_id
+          vehicleId: '-' + this.selected.vehicleId.toUpperCase() // this.vehicle_id
         })
+        // alert(this.Driver_Name)
         this.$store.dispatch('make_vehicle_live', {
           origin: this.Origin,
+          availability: true,
+          uid: this.selected.vendorId,
           destination: this.Destination,
           driverId: this.Driver_Name,
           price: this.Price,
-          vehicleId: 'ket-123456' // this.vehicle_id
+          vehicleId: '-' + this.selected.vehicleId.toUpperCase()
         })
         this.submitstatus = 'Success'
+        this.$refs['my-modal'].hide()
+        location.href = 'http://localhost:3000/vendor/vehicles'
       }
     },
     onFiltered(filteredItems) {
@@ -305,25 +341,31 @@ export default {
     },
     rowClick(item) {
       this.selected = item
-      // this vehicle_id will be used while making vehicle live
-      // this.vehicle_id = x
-      // alert('this.vendorId   ' + x)
-      // alert('availabilty : ' + item)
       if (!item.availability) {
         this.$refs['my-modal'].show()
+      } else {
+        consola.success({
+          status: false,
+          uid: this.selected.vendorId,
+          myVehicleId: '-' + this.selected.vehicleId
+        })
+        this.$store.dispatch('make_vehicle_offline', {
+          availability: false,
+          uid: this.selected.vendorId,
+          vehicleId: '-' + this.selected.vehicleId.toUpperCase()
+        })
+        location.href = 'http://localhost:3000/vendor/vehicles'
       }
 
       // this.$refs['my-modal'].hide();
     },
     myRowClickHandler(items) {
-      // alert('you clicked the row')
       this.selected = items
+      const id = items.ID
+      consola.log(id)
       this.$router.push({
-        path: '/vendor/addVehicle'
+        path: '/vendor/editVehicle/' + id
       })
-      // alert('Origin : ' + item.Origin)
-      // this.$refs['my-modal'].show()
-      // this.$refs['my-modal'].hide();
     },
     VAction(id, ty) {
       consola.success(id, ty)

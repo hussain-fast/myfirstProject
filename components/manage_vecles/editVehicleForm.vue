@@ -47,10 +47,10 @@
             <input type="text" class="form-control" v-model="vehicleMake" />
           </div>
         </div>
-        <button type="submit" class="btn btn-sm btn-primary float-right">submit {{ submitstatus }}</button>
-        <!-- <b-button variant="primary" size="sm" class="float-right" @click="editVehicle">
+        <!-- <button type="submit" class="btn btn-sm btn-primary float-right">submit {{ submitstatus }}</button> -->
+        <b-button variant="primary" size="sm" class="float-right" @click="editVehicle">
           Edit Vehicle
-        </b-button> -->
+        </b-button>
       </form>
     </div>
   </div>
@@ -78,16 +78,16 @@ export default {
     }
   },
   created() {
-    // DB.ref('heavyVehicles')
-    //   .child(this.$route.params.id)
-    //   .once('value')
-    //   .then((snap) => {
-    //     console.log(snap.val())
-    //     this.vehicleModel = snap.val().v_model
-    //     this.vehicleType = snap.val().name
-    //     this.vehicleNumber = snap.val().v_number
-    //     this.vehicleMake = snap.val().v_make
-    //   })
+    DB.ref('heavyVehicles')
+      .child(this.$route.params.id)
+      .once('value')
+      .then((snap) => {
+        console.log(snap.val())
+        this.vehicleModel = snap.val().v_model
+        this.vehicleType = snap.val().name
+        this.vehicleNumber = snap.val().v_number
+        this.vehicleMake = snap.val().v_make
+      })
 
     this.$store.dispatch('get_VechilesList')
   },
@@ -101,7 +101,6 @@ export default {
   },
   methods: {
     submitForm() {
-      const userid = firebase.auth().currentUser.uid
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitstatus = 'Fail'
@@ -118,16 +117,15 @@ export default {
           name: this.list[this.vehicleType].name,
           v_number: this.vehicleNumber,
           v_model: this.vehicleModel,
-          v_make: this.vehicleMake,
-          uid: userid
+          v_make: this.vehicleMake
         })
         this.submitstatus = 'Success'
-        location.href = 'http://localhost:3000/vendor/vehicles'
+        // location.href = 'http://localhost:3000/vendor/vehicles'
       }
     },
     editVehicle() {
       const userid = firebase.auth().currentUser.uid
-      // alert('-' + this.vehicleNumber.toUpperCase())
+      //   alert('-' + this.vehicleNumber.toUpperCase())
       consola.success({
         vehicleId: '-' + this.vehicleNumber.toUpperCase(),
         name: this.list[this.vehicleType].name,
@@ -137,7 +135,7 @@ export default {
         uid: userid
       })
       this.$store.dispatch('edit_vendor_vehicle', {
-        vehicleId: this.vehicleNumber,
+        vehicleId: '-' + this.vehicleNumber.toUpperCase(),
         name: this.list[this.vehicleType].name,
         v_number: this.vehicleNumber,
         v_model: this.vehicleModel,

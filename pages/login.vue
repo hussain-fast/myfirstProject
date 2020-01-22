@@ -52,6 +52,7 @@
             <span v-if="!$v.password.required">Password is required</span>
           </div>
         </div>
+        <p style="color:red">{{ this.submitstatus }}</p>
 
         <div class="form-group">
           <input @click="Login" type="button" name="btn" value="Login" class="btn btn-outline-danger float-right" />
@@ -70,7 +71,8 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      submitstatus: ''
     }
   },
   validations: {
@@ -85,9 +87,8 @@ export default {
     Login(p) {
       this.$v.$touch()
       if (this.$v.$invalid) {
-        this.submitstatus = 'Fail'
+        this.submitstatus = 'Invalid Data'
       } else {
-        this.submitstatus = 'Success'
       }
       const { email, password, $store: store } = this
       store

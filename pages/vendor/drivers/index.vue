@@ -46,7 +46,7 @@
       @filtered="onFiltered"
       :fields="fields"
       :items="items"
-      @row-clicked="goToProfile(items)"
+      @row-clicked="myRowClickHandler"
     ></b-table>
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
     <!-- <b-modal ref="my-modal" title="Enter following information">
@@ -190,16 +190,12 @@ export default {
       this.totalRows = filteredItems.length
       this.currentPage = 1
     },
-    goToProfile(item) {
-      // How to get the selected row id to update it with the information in the popup?
-      this.selected = item
-
+    myRowClickHandler(items) {
+      this.selected = items
+      const id = items.ID
       this.$router.push({
-        path: '/vendor/driver_profile'
+        path: '/vendor/driver_profile/' + id
       })
-
-      // this.$refs['my-modal'].show()
-      // this.$refs['my-modal'].hide();
     }
   }
 }

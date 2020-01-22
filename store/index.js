@@ -14,12 +14,20 @@ const createStore = () => {
       sidebar: false,
       MyVechiles: [],
       HeavyVechiles: [],
+      waliVehicles: [],
       VendorDrivers: [],
+      DriverPerDayLogs: [],
+      DriverAllLogs: [],
+      DriversWallets: [],
       NewJobs: [],
       AllJobs: [],
+      DriverJobs: [],
       Accounts: [],
       VechilesList: {}, // for State
+      VendorLiveVehicles: [], // this is for fetching vendors live vehicle list for pending requets
       VendorDriversList: {}, // it is for make vehicle live popup
+      VendorLiveDriversList: {},
+      MyLiveVehicles: {},
       adda_list: []
     },
     getters: {
@@ -31,11 +39,18 @@ const createStore = () => {
     mutations: {
       setAddaList: (state, payload) => (state.adda_list = payload),
       setVechilesList: (state, payload) => (state.VechilesList = payload), // For Saving in state
+      setVendorLiveVehicles: (state, payload) => (state.VendorLiveVehicles = payload), // For Saving in state
       setVendorDriversList: (state, payload) => (state.VendorDriversList = payload), // For Showing in make vehicle live popup
+      setVendorLiveDriversList: (state, payload) => (state.VendorLiveDriversList = payload), // For Showing in make vehicle live popup
+      setMyLiveVehicles: (state, payload) => (state.MyLiveVehicles = payload), // For Showing in make vehicle live popup
       setHeavyVechiles: (state, payload) => (state.HeavyVechiles = payload),
       setVendorDrivers: (state, payload) => (state.VendorDrivers = payload),
+      setDriverPerDayLogs: (state, payload) => (state.DriverPerDayLogs = payload),
+      setDriverAllLogs: (state, payload) => (state.DriverAllLogs = payload),
+      setDriversWallets: (state, payload) => (state.DriversWallets = payload),
       setNewJobs: (state, payload) => (state.NewJobs = payload),
       setAllJobs: (state, payload) => (state.AllJobs = payload),
+      setDriverJobs: (state, payload) => (state.DriverJobs = payload),
       setAccounts: (state, payload) => (state.Accounts = payload),
       setVendorVehicles: (state, payload) => (state.setVendorVehicles = payload),
       setMyVechiles: (state, payload) => (state.MyVechiles = payload),
@@ -63,6 +78,56 @@ const createStore = () => {
           .once('value')
           .then((snap) => commit('setVendorDriversList', snap.val()))
       },
+      // this fetches driver list of vendor for make live pop up, minhaj will provide the condtion to fetch right list of drivres
+      get_VendorLiveDriversList({ commit, state }) {
+        DB.ref('heavyVehicles')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => commit('setVendorLiveDriversList', snap.val()))
+      },
+      get_MyLiveVehicles({ commit, state }) {
+        DB.ref('heavyVehicles')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => {
+            const payload = {}
+
+            snap.forEach((ele) => {
+              // console.log(ele.val().availability)
+              if (ele.val().availability === true) {
+                console.log(ele.val().availabilityInfo)
+                payload.push({
+                  ID: ele.key,
+                  Status: ele.val().availability,
+                  Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                  Vehicle_Name: ele.val().name,
+                  Vehicle_Number: ele.val().v_number,
+                  availability: ele.val().availability,
+                  vehicleId: ele.val().vehicleId,
+                  vendorId: ele.val().vendorId
+                  // Origin: ele.val().availabilityInfo.origin,
+                  // Destination: ele.val().availabilityInfo.destination,
+                  // Driver_Name: ele.val().driverId,
+                  // Price: ele.val().availabilityInfo.price,
+                  // Commission_Price: ele.val().availabilityInfo.comission
+                })
+              } else {
+                consola.success('no data found')
+              }
+            })
+
+            commit('setMyLiveVehicles', payload)
+          })
+      },
+      get_VendorVehiclesList({ commit, state }) {
+        DB.ref('heavyVehicles')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => commit('setVendorDriversList', snap.val()))
+      },
       get_adda_list({ commit }) {
         return new Promise((resolve, reject) => {
           this.$axios.get('https://localhost:4443/test/adda_list').then((payload) => {
@@ -81,7 +146,29 @@ const createStore = () => {
             .catch(reject)
         })
       },
+      edit_vendor_driver({ commit }, data) {
+        alert(data)
+        return new Promise((resolve, reject) => {
+          this.$axios
+            .post('https://localhost:4443/test/update_vendor_driver', data)
+            .then(({ data }) => {
+              consola.success(data)
+            })
+            .catch(reject)
+        })
+      },
       make_vehicle_live({ commit }, data) {
+        // alert(data)
+        return new Promise((resolve, reject) => {
+          this.$axios
+            .post('https://localhost:4443/test/change_vendor_vehicle_availability', data)
+            .then(({ data }) => {
+              consola.success(data)
+            })
+            .catch(reject)
+        })
+      },
+      make_vehicle_offline({ commit }, data) {
         alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
@@ -92,10 +179,43 @@ const createStore = () => {
             .catch(reject)
         })
       },
+      allot_heavy_vehicle_to_pending_request({ commit }, data) {
+        alert(data)
+        return new Promise((resolve, reject) => {
+          this.$axios
+            .post('https://localhost:4443/test/allot_vehicle_by_vendor_heavy_vehicle_req', data)
+            .then(({ data }) => {
+              consola.success(data)
+            })
+            .catch(reject)
+        })
+      },
+      accept_heavy_vehicle_request({ commit }, data) {
+        alert(data)
+        return new Promise((resolve, reject) => {
+          this.$axios
+            .post('https://localhost:4443/test/accept_by_vendor_heavy_vehicle_req', data)
+            .then(({ data }) => {
+              consola.success(data)
+            })
+            .catch(reject)
+        })
+      },
+      complete_heavy_vehicle_request({ commit }, data) {
+        alert(data)
+        return new Promise((resolve, reject) => {
+          this.$axios
+            .post('https://localhost:4443/test/complete_heavy_vehicle_req', data)
+            .then(({ data }) => {
+              consola.success(data)
+            })
+            .catch(reject)
+        })
+      },
       add_vehicle(
         { commit },
         // eslint-disable-next-line camelcase
-        { vehicleId, name, v_number, v_model, v_make }
+        { vehicleId, name, v_number, v_model, v_make, uid }
       ) {
         return new Promise((resolve, reject) => {
           this.$axios.post('https://localhost:4443/test/add_vendor_vehicle', {
@@ -103,7 +223,25 @@ const createStore = () => {
             name,
             v_number,
             v_model,
-            v_make
+            v_make,
+            uid
+          })
+        })
+      },
+      edit_vendor_vehicle(
+        { commit },
+        // eslint-disable-next-line camelcase
+        { vehicleId, name, v_number, v_model, v_make, uid, availability }
+      ) {
+        return new Promise((resolve, reject) => {
+          this.$axios.post('https://localhost:4443/test/update_vendor_vehicle', {
+            vehicleId,
+            name,
+            v_number,
+            v_model,
+            v_make,
+            uid,
+            availability
           })
         })
       },
@@ -117,100 +255,78 @@ const createStore = () => {
 
             snap.forEach((ele) => {
               consola.success(ele.val())
-
-              payload.push({
-                ID: ele.key,
-                Status: ele.val().availability,
-
-                Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
-                Vehicle_Name: ele.val().name,
-                Vehicle_Number: ele.val().v_number,
-                availability: ele.val().availability
-
-                // Origin: ""
-                // Destination: ""
-                // Driver_Name: ""
-                // Driver_CNIC: ""
-                // Driver_LicenseNo: ""
-                // Driver_Phone: ""
-                // Price: ""
-                // Commission_Price: ""
-              })
-
-              // updatedAt: 1576142641943
-              // v_make: '5489'
-              // v_year: '89784'
-              // vehicleId: 'honda_traller'
-              // vendorId: '-LtxgnFM8NzuMXKWDzGC'
+              if (ele.val().availabilityInfo) {
+                DB.ref('users')
+                  .child(ele.val().driverId)
+                  .once('value')
+                  .then((userSnap) => {
+                    payload.push({
+                      ID: ele.key,
+                      Status: ele.val().availability,
+                      Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                      Vehicle_Name: ele.val().name,
+                      Vehicle_Number: ele.val().v_number,
+                      availability: ele.val().availability,
+                      vehicleId: ele.val().vehicleId,
+                      vendorId: ele.val().vendorId,
+                      Origin: ele.val().availabilityInfo.origin,
+                      Destination: ele.val().availabilityInfo.destination,
+                      Driver_Name: userSnap.child('first_name').val() + ' ' + userSnap.child('last_name').val(),
+                      Price: ele.val().availabilityInfo.price,
+                      Commission_Price: ele.val().availabilityInfo.comission
+                    })
+                  })
+              } else {
+                payload.push({
+                  ID: ele.key,
+                  Status: ele.val().availability,
+                  Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                  Vehicle_Name: ele.val().name,
+                  Vehicle_Number: ele.val().v_number,
+                  availability: ele.val().availability,
+                  vehicleId: ele.val().vehicleId,
+                  vendorId: ele.val().vendorId
+                })
+              }
             })
 
             commit('setHeavyVechiles', payload)
           })
+      },
+      get_vendorLiveVehicles({ commit, state }) {
+        DB.ref('heavyVehicles')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => {
+            const payload = []
 
-        // this.$axios
-        //   .get('https://localhost:4443/test/heavy_vehicles')
-        //   .then(({ data }) => {
-        //     consola.success(data.data)
-        //     const payload = []
-        //     for (const property in data.data) {
-        //       if (data.data.hasOwnProperty(property)) {
-        //         const obj = {}
+            snap.forEach((ele) => {
+              // console.log(ele.val().availability)
+              if (ele.val().availability === true) {
+                console.log(ele.val().availabilityInfo)
+                // payload.push({
+                //   ID: ele.key,
+                //   Status: ele.val().availability,
+                //   Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                //   Vehicle_Name: ele.val().name,
+                //   Vehicle_Number: ele.val().v_number,
+                //   availability: ele.val().availability,
+                //   vehicleId: ele.val().vehicleId,
+                //   vendorId: ele.val().vendorId
+                //   // Origin: ele.val().availabilityInfo.origin,
+                //   // Destination: ele.val().availabilityInfo.destination,
+                //   // Driver_Name: ele.val().driverId,
+                //   // Price: ele.val().availabilityInfo.price,
+                //   // Commission_Price: ele.val().availabilityInfo.comission
+                // })
+              } else {
+                consola.success('no data found')
+              }
+            })
 
-        //         obj.value = property
-        //         obj.text = data.data[property].name
-        //         obj.disabled = !data.data[property].status
-        //         payload.push(obj)
-        //       }
-        //     }
-        //   })
-        //   .catch(consola.error)
-
-        // this.$axios
-        //   .get('https://localhost:4443/test/get_vendor_vehicles')
-        //   .then(({ data }) => {
-        //     const payload = []
-        //     for (const property in data.data) {
-        //       if (data.data.hasOwnProperty(property)) {
-        //         const obj = {}
-        //         obj.ID = property
-        //         consola.success(data.data[property].createdAt)
-        //         obj.Created_At = moment(data.data[property].createdAt).format('DD-MM-YYYY')
-        //         obj.Vehicle_Name = data.data[property].name
-        //         obj.Vehicle_Number = data.data[property].v_number
-        //         obj.Origin = data.data[property].availabilityInfo ? data.data[property].availabilityInfo.origin : ''
-        //         obj.Destination = data.data[property].availabilityInfo ? data.data[property].availabilityInfo.destination : ''
-        //         obj.Driver_Name = data.data[property].availabilityInfo
-        //           ? data.data[property].availabilityInfo.driverInfo
-        //             ? data.data[property].availabilityInfo.driverInfo.name
-        //             : ''
-        //           : ''
-        //         obj.Driver_CNIC = data.data[property].availabilityInfo
-        //           ? data.data[property].availabilityInfo.driverInfo
-        //             ? data.data[property].availabilityInfo.driverInfo.cnic
-        //             : ''
-        //           : ''
-        //         obj.Driver_LicenseNo = data.data[property].availabilityInfo
-        //           ? data.data[property].availabilityInfo.driverInfo
-        //             ? data.data[property].availabilityInfo.driverInfo.licenseNo
-        //             : ''
-        //           : ''
-        //         obj.Driver_Phone = data.data[property].availabilityInfo
-        //           ? data.data[property].availabilityInfo.driverInfo
-        //             ? data.data[property].availabilityInfo.driverInfo.phone
-        //             : ''
-        //           : ''
-
-        //         obj.Price = data.data[property].availabilityInfo ? data.data[property].availabilityInfo.price : ''
-        //         obj.Commission_Price = data.data[property].availabilityInfo ? data.data[property].availabilityInfo.comission : ''
-        //         obj.Status = data.data[property].status
-
-        //         payload.push(obj)
-        //       }
-        //     }
-        //     consola.success(payload)
-        //     commit('setMyVechiles', payload)
-        //   })
-        //   .catch(consola.error)
+            commit('setVendorLiveVehicles', payload)
+          })
       },
       get_my_drivers({ commit, state }) {
         DB.ref('users')
@@ -232,7 +348,7 @@ const createStore = () => {
                 CNIC_NO: ele.val().cnic_no,
                 Driving_License: ele.val().driving_license,
                 Email: ele.val().email,
-                Driver_Name: ele.val().first_name,
+                Driver_Name: ele.val().first_name + ' ' + ele.val().last_name,
                 Mobile_No: ele.val().mob_no,
                 Offline: ele.val().offline,
                 Password: ele.val().password,
@@ -244,7 +360,7 @@ const createStore = () => {
             commit('setVendorDrivers', payload)
           })
       },
-      get_all_jobs({ commit, state }) {
+      get_driver_per_day_logs({ commit, state }) {
         DB.ref('users')
           .orderByChild('vendorId')
           .equalTo(state.user.uid)
@@ -273,12 +389,13 @@ const createStore = () => {
               })
             })
 
-            commit('setAllJobs', payload)
+            commit('setDriverPerDayLogs', payload)
           })
       },
-      get_new_jobs({ commit, state }) {
-        DB.ref('requests/heavyVehicles')
-          .where('status', '!==', 'cancel')
+      get_driver_all_logs({ commit, state }) {
+        DB.ref('users')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
           .once('value')
           .then((snap) => {
             const payload = []
@@ -289,24 +406,172 @@ const createStore = () => {
               payload.push({
                 ID: ele.key,
                 Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
-                Client_Id: ele.val().Client_Id,
-                Request_Date: ele.val().requDate,
-                Origin: ele.val().orgText,
-                Destination: ele.val().desText,
-                Is_Hire: ele.val().isHire,
-                Vehicle_Id: ele.val().vehicleId,
-                Price: ele.val().price,
-                Commission: ele.val().comission,
-                Status: ele.val().status
+                Vendor_Id: ele.val().vendorId,
+                Adda_Ref: ele.val().adda_ref,
+                Blocked: ele.val().blocked,
+                CNIC_NO: ele.val().cnic_no,
+                Driving_License: ele.val().driving_license,
+                Email: ele.val().email,
+                Driver_Name: ele.val().first_name,
+                Mobile_No: ele.val().mob_no,
+                Offline: ele.val().offline,
+                Password: ele.val().password,
+                Status: ele.val().status,
+                Vehicle_Type: ele.val().vehicle
               })
+            })
+
+            commit('setDriverAllLogs', payload)
+          })
+      },
+      get_driver_wallets({ commit, state }) {
+        DB.ref('users')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => {
+            const payload = []
+
+            snap.forEach((ele) => {
+              consola.success(ele.val())
+
+              payload.push({
+                ID: ele.key,
+                Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                Vendor_Id: ele.val().vendorId,
+                Adda_Ref: ele.val().adda_ref,
+                Blocked: ele.val().blocked,
+                CNIC_NO: ele.val().cnic_no,
+                Driving_License: ele.val().driving_license,
+                Email: ele.val().email,
+                Driver_Name: ele.val().first_name,
+                Mobile_No: ele.val().mob_no,
+                Offline: ele.val().offline,
+                Password: ele.val().password,
+                Status: ele.val().status,
+                Vehicle_Type: ele.val().vehicle
+              })
+            })
+
+            commit('setDriversWallets', payload)
+          })
+      },
+      get_all_jobs({ commit, state }) {
+        DB.ref('requests/heavyVehicles')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => {
+            const payload = []
+
+            snap.forEach((ele) => {
+              // consola.success(ele.val())
+              // if (ele.val().status === 'completed' || ele.val().status === 'cancel') {
+              DB.ref('users')
+                .child(ele.val().clientId)
+                .once('value')
+                .then((userSnap) => {
+                  payload.push({
+                    ID: ele.key,
+                    Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                    Client_Name: userSnap.child('first_name').val() + ' ' + userSnap.child('last_name').val(),
+                    Request_Date: ele.val().requDate,
+                    Origin: ele.val().orgText,
+                    Destination: ele.val().desText,
+                    // Is_Hire: ele.val().isHire,
+                    Vehicle_Number: ele.val().vehicleId,
+                    Price: ele.val().price,
+                    Commission: ele.val().comission,
+                    Status: ele.val().status
+                  })
+                  // }
+                })
+            })
+
+            commit('setAllJobs', payload)
+          })
+      },
+      get_driver_jobs({ commit, state }) {
+        DB.ref('users')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => {
+            const payload = []
+
+            snap.forEach((ele) => {
+              consola.success(ele.val())
+
+              payload.push({
+                ID: ele.key,
+                Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                Vendor_Id: ele.val().vendorId,
+                Adda_Ref: ele.val().adda_ref,
+                Blocked: ele.val().blocked,
+                CNIC_NO: ele.val().cnic_no,
+                Driving_License: ele.val().driving_license,
+                Email: ele.val().email,
+                Driver_Name: ele.val().first_name,
+                Mobile_No: ele.val().mob_no,
+                Offline: ele.val().offline,
+                Password: ele.val().password,
+                Status: ele.val().status,
+                Vehicle_Type: ele.val().vehicle
+              })
+            })
+
+            commit('setDriverJobs', payload)
+          })
+      },
+      get_new_jobs({ commit, state }) {
+        DB.ref('requests/heavyVehicles')
+          .orderByChild('vendorId')
+          .equalTo(state.user.uid)
+          .once('value')
+          .then((snap) => {
+            const payload = []
+            snap.forEach((ele) => {
+              consola.success(ele.val())
+              // switch (ele.status) {
+              //   case 'pending':
+              //   case 'accept':
+              //   case 'allot': {
+              if (ele.val().status === 'pending' || ele.val().status === 'accept' || ele.val().status === 'allot') {
+                DB.ref('users')
+                  .child(ele.val().clientId)
+                  .once('value')
+                  .then((userSnap) => {
+                    console.log(ele.val())
+                    payload.push({
+                      ID: ele.key,
+                      vendorId: state.user.uid,
+                      Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                      accept_time: moment(ele.val().accept_time).format('MM-DD-YYYY'),
+                      allot_time: moment(ele.val().allot_time).format('MM-DD-YYYY'),
+                      completedAt: moment(ele.val().completedAt).format('MM-DD-YYYY'),
+                      Client_Name: userSnap.child('first_name').val() + ' ' + userSnap.child('last_name').val(),
+                      Client_No: userSnap.child('mob_no').val(),
+                      Request_Date: ele.val().requDate,
+                      Origin: ele.val().orgText,
+                      Destination: ele.val().desText,
+                      Is_Hire: ele.val().isHire,
+                      Vehicle_Id: ele.val().vehicleId,
+                      Price: ele.val().price,
+                      Commission: ele.val().comission,
+                      Status: ele.val().status
+                    })
+                  })
+              }
+              //   }
+              // }
             })
 
             commit('setNewJobs', payload)
           })
       },
       get_all_account({ commit, state }) {
-        DB.ref('users')
-          .orderByChild('vendorId')
+        DB.ref('requests/heavyVehicles')
+          .orderByChild('driverId')
           .equalTo(state.user.uid)
           .once('value')
           .then((snap) => {
@@ -317,19 +582,13 @@ const createStore = () => {
 
               payload.push({
                 ID: ele.key,
-                Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
-                Vendor_Id: ele.val().vendorId,
-                Adda_Ref: ele.val().adda_ref,
-                Blocked: ele.val().blocked,
-                CNIC_NO: ele.val().cnic_no,
-                Driving_License: ele.val().driving_license,
-                Email: ele.val().email,
-                Driver_Name: ele.val().first_name,
-                Mobile_No: ele.val().mob_no,
-                Offline: ele.val().offline,
-                Password: ele.val().password,
-                Status: ele.val().status,
-                Vehicle_Type: ele.val().vehicle
+                Date: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                Invoice_No: ele.val().clientId,
+                Price: ele.val().price,
+                Commission: ele.val().comission,
+                Commission_Amount: ele.val().comission,
+                Income_Amount: ele.val().price,
+                status: ele.val().status
               })
             })
 
@@ -358,7 +617,7 @@ const createStore = () => {
                 .once('value')
                 .then((snap) => {
                   if (snap.exists()) commit('setAuthType', snap.val().type)
-                  else commit('setAuthType', 'admin')
+                  else commit('setAuthType', 'vendor')
                   resolve()
                 })
                 .catch((e) => consola.info(e))
@@ -378,19 +637,37 @@ const createStore = () => {
             .equalTo(email)
             .once('value')
             .then((users) => {
-              let isOk = false
-              users.forEach((user) => (isOk = user.val().type === type ? true : isOk))
-
-              if (isOk) {
-                consola.info('asdasdas')
+              if (users.exists()) {
+                auth
+                  .signInWithEmailAndPassword(email, password)
+                  .then((user) => {
+                    consola.info(user)
+                    this.$router.push({
+                      path: '/vendor/'
+                    })
+                    resolve(user)
+                  })
+                  .catch((e) => {
+                    auth
+                      .createUserWithEmailAndPassword(email, password)
+                      .then((user) => {
+                        consola.info(user)
+                        this.$router.push({
+                          path: '/vendor/'
+                        })
+                        resolve(user)
+                      })
+                      .catch((e) => consola.error(e))
+                  })
+                users.forEach((element) => {
+                  if (element.child('type').val() === 'vendor') {
+                  } else {
+                    return 'vendor not exist'
+                  }
+                })
+              } else {
+                return 'data not exist'
               }
-            })
-            .catch((e) => consola.error(e))
-          auth
-            .signInWithEmailAndPassword(email, password)
-            .then((user) => {
-              consola.info(user)
-              resolve(user)
             })
             .catch((e) => consola.error(e))
         })

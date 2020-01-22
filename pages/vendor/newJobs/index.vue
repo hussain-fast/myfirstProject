@@ -54,7 +54,7 @@
                       <th>Client Name</th>
                       <td>{{ selected.Client_Name }}</td>
                     </tr>
-                    <tr v-if="true">
+                    <tr v-if="selected.Client_No">
                       <th>Client Number</th>
                       <td>{{ selected.Client_No }}</td>
                     </tr>
@@ -94,21 +94,21 @@
                       <th>Created_At</th>
                       <td>{{ selected.Created_At }}</td>
                     </tr>
-                    <tr v-if="selected.Reach_Time">
-                      <th>Reach_Time</th>
-                      <td>{{ selected.Reach_Time }}</td>
+                    <tr v-if="false">
+                      <th>Accept_Time</th>
+                      <td>{{ selected.accept_time }}</td>
                     </tr>
-                    <tr v-if="selected.Load_Time">
-                      <th>Load_Time</th>
-                      <td>{{ selected.Load_Time }}</td>
+                    <tr v-if="false">
+                      <th>Allot_Time</th>
+                      <td>{{ selected.allot_time }}</td>
                     </tr>
                     <!-- <tr v-if="transReq.data.oneWay !== null">
                         <th>Type</th>
                         <td>{{ transReq.data.oneWay ? 'One Way' : 'Two Way' }}</td>
                       </tr> -->
-                    <tr v-if="selected.Drop_Time">
-                      <th>Drop_Time</th>
-                      <td>{{ selected.Drop_Time }}</td>
+                    <tr v-if="false">
+                      <th>Complete_Time</th>
+                      <td>{{ selected.completedAt }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -116,11 +116,23 @@
             </b-row>
             <b-row v-if="selected.Status == 'pending'">
               <b-col sm="12">
-                <b-form-group label="Vehicle*:" label-for="vehicle" description="Select Vehicle">
-                  <b-form-select id="vehicle" v-model="vehicle" :options="vehicle_list">
+                <!-- <select class="form-control" v-model.trim="vehicle">
+                  <option value="">Select Driver</option>
+                  <option v-for="(make, index) in liveVehicles" :key="index" v-bind:value="index">
+                    {{ make.name }}
+                  </option>
+                </select> -->
+                <!-- <b-form-group label="Vehicle*:" label-for="vehicle" description="Select Vehicle">
+                  <b-form-select id="vehicle" v-model="vehicle" :options="liveVehicles">
                     <option value="null">Select Any Vehicle</option>
                   </b-form-select>
-                </b-form-group>
+                </b-form-group> -->
+                <select class="form-control" v-model="Vehicle_Name">
+                  <option value="">Select Vehicle</option>
+                  <option v-for="(make, index) in list" :key="index" v-bind:value="index">
+                    {{ make.name }}
+                  </option>
+                </select>
               </b-col>
             </b-row>
           </div>
@@ -134,13 +146,16 @@
             </div>
           </template>
         </b-modal>
-        <!-- Model code end here -->\
+        <!-- Model code end here -->
       </b-col>
     </b-row>
   </div>
 </template>
 <script>
 import consola from 'consola'
+import moment from 'moment'
+import { auth, DB } from '~/plugins/firebase.js'
+import firebase from '@/plugins/firebase'
 // import modelForPendingStatus from './../../../components/manage_requests/modelForPendingStatus'
 // import modelForAcceptedStatus from './../../../components/manage_requests/modelForAcceptedStatus'
 export default {
@@ -157,107 +172,174 @@ export default {
       sortDesc: false,
       headVariant: 'dark',
       selected: [],
-      vehicle: '',
+      Vehicle_Name: '',
+      vehicleId: '',
       vehicle_list: ['22 wheeler', '18 wheeler', '12 wheeler', '26 wheeler', 'Other'],
       perPage: 3,
       currentPage: 1,
       totalRows: 1,
       filter: null,
       rows: 5,
+      liveVehicles: [],
       fields: [
         { key: 'Created_At', sortable: true },
-        'Client_Id',
-        'Load_Time',
+        'Client_Name',
         'Request_Date',
         'Origin',
         'Destination',
-        'Is_Hire',
         'Vehicle_Id',
         'Price',
         'Commission',
         'Status'
-      ],
-
-      items: [
-        {
-          Created_At: '10-12-2019',
-          Reach_Time: '08-12-2019',
-          Load_Time: '06-12-2019',
-          Drop_Time: '06-12-2019',
-          Client_Name: 'Ahmed',
-          Client_No: '03023273270',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Destination: 'Hyderabad',
-          Distance: '200 KM',
-          Duration: '3 hours',
-          Status: 'pending'
-        },
-        {
-          Created_At: '08-12-2019',
-          Reach_Time: '06-12-2019',
-          Load_Time: '06-12-2019',
-          Drop_Time: '06-12-2019',
-          Client_Name: 'Ahmed',
-          Client_No: '03023273270',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Destination: 'Hyderabad',
-          Distance: '200 KM',
-          Duration: '3 hours',
-          Status: 'allot'
-        },
-        {
-          Created_At: '02-12-2019',
-          Reach_Time: '06-12-2019',
-          Load_Time: '06-12-2019',
-          Drop_Time: '06-12-2019',
-          Client_Name: 'Raheel',
-          Client_No: '03023273270',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Destination: 'Hyderabad',
-          Distance: '200 KM',
-          Duration: '3 hours',
-          Status: 'accept'
-        },
-        {
-          Created_At: '04-12-2019',
-          Reach_Time: '06-12-2019',
-          Load_Time: '06-12-2019',
-          Drop_Time: '06-12-2019',
-          Client_Name: 'Kamran',
-          Client_No: '03023273270',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Destination: 'Hyderabad',
-          Distance: '200 KM',
-          Duration: '3 hours',
-          Status: 'allot'
-        }
       ]
+
+      // items: [
+      //   {
+      //     Created_At: '10-12-2019',
+      //     Reach_Time: '08-12-2019',
+      //     Load_Time: '06-12-2019',
+      //     Drop_Time: '06-12-2019',
+      //     Client_Name: 'Ahmed',
+      //     Client_No: '03023273270',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Destination: 'Hyderabad',
+      //     Distance: '200 KM',
+      //     Duration: '3 hours',
+      //     Status: 'pending'
+      //   },
+      //   {
+      //     Created_At: '08-12-2019',
+      //     Reach_Time: '06-12-2019',
+      //     Load_Time: '06-12-2019',
+      //     Drop_Time: '06-12-2019',
+      //     Client_Name: 'Ahmed',
+      //     Client_No: '03023273270',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Destination: 'Hyderabad',
+      //     Distance: '200 KM',
+      //     Duration: '3 hours',
+      //     Status: 'allot'
+      //   },
+      //   {
+      //     Created_At: '02-12-2019',
+      //     Reach_Time: '06-12-2019',
+      //     Load_Time: '06-12-2019',
+      //     Drop_Time: '06-12-2019',
+      //     Client_Name: 'Raheel',
+      //     Client_No: '03023273270',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Destination: 'Hyderabad',
+      //     Distance: '200 KM',
+      //     Duration: '3 hours',
+      //     Status: 'accept'
+      //   },
+      //   {
+      //     Created_At: '04-12-2019',
+      //     Reach_Time: '06-12-2019',
+      //     Load_Time: '06-12-2019',
+      //     Drop_Time: '06-12-2019',
+      //     Client_Name: 'Kamran',
+      //     Client_No: '03023273270',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Destination: 'Hyderabad',
+      //     Distance: '200 KM',
+      //     Duration: '3 hours',
+      //     Status: 'allot'
+      //   }
+      // ]
     }
   },
   computed: {
+    list() {
+      consola.success(this.$store.state.VendorLiveDriversList)
+      return this.$store.state.VendorLiveDriversList
+    },
     rowss() {
       return this.items.length
     },
-    itemss() {
+    items() {
       return this.$store.state.NewJobs
     }
+    // liveVehicles() {
+    //   return this.liveVehicles
+    // }
     // return() {
     //   Commission_Price = (10 / 100) * price
     // }
   },
-  // beforeCreate() {
-  //   this.$store.dispatch('get_new_jobs')
-  //   consola.info('Before Create')
-  // },
+  created() {
+    this.$store.dispatch('get_VendorLiveDriversList')
+  },
+  beforeCreate() {
+    this.$store.dispatch('get_new_jobs')
+    // this.$store.dispatch('get_MyLiveVehicles')
+    // consola.info('Before Create')
+    // DB.ref('heavyVehicles')
+    //   .orderByChild('vendorId')
+    //   .equalTo(firebase.auth().currentUser.uid)
+    //   .once('value')
+    //   .then((snap) => {
+    //     console.log(snap.val())
+    //     snap.forEach((ele) => {
+    //       if (ele.val().availability === true) {
+    //         console.log('hisssss')
+    //         console.log(ele.val().availability)
+    //         this.liveVehicles.push()
+    //         // name: this.list[this.vehicleType].name,
+    //         // console.log(this.liveVehicles[this.Vehicle_Name].name)
+    //       }
+    //     })
+    //   })
+  },
   mounted() {
     // Set the initial number of items
     this.totalRows = this.items.length
   },
   methods: {
+    // when staus = pending
+    allotVehicle() {
+      // alert('vehicle id' + this.Vehicle_Name)
+      this.$store.dispatch('allot_heavy_vehicle_to_pending_request', {
+        reqId: this.selected.ID,
+        vehicleId: this.Vehicle_Name,
+        uid: this.selected.vendorId
+        // destination: this.Destination,
+        // driverId: this.Driver_Name,
+        // price: this.Price,
+      })
+      this.$refs['model-pendingStatus'].hide()
+      location.href = 'http://localhost:3000/vendor/newJobs'
+    },
+    // when status = allot and isHire = true
+    acceptRequest() {
+      // alert('vendorId :  ' + this.selected.vendorId)
+      // alert('ID :  ' + this.selected.ID)
+      this.$store.dispatch('accept_heavy_vehicle_request', {
+        reqId: this.selected.ID,
+        uid: this.selected.vendorId
+        // destination: this.Destination,
+        // driverId: this.Driver_Name,
+        // price: this.Price,
+      })
+      this.$refs['model-pendingStatus'].hide()
+      location.href = 'http://localhost:3000/vendor/newJobs'
+    },
+    // when status = accept
+    completeRequest() {
+      this.$store.dispatch('complete_heavy_vehicle_request', {
+        reqId: this.selected.ID,
+        uid: this.selected.vendorId
+        // destination: this.Destination,
+        // driverId: this.Driver_Name,
+        // price: this.Price,
+      })
+      this.$refs['model-pendingStatus'].hide()
+      location.href = 'http://localhost:3000/vendor/newJobs'
+    },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length
@@ -267,10 +349,9 @@ export default {
       this.selected = item
       this.$refs['model-pendingStatus'].show()
       // this.$refs['my-modal'].hide();
-    },
-    allotVehicle() {},
-    acceptRequest() {},
-    completeRequest() {}
+    }
+    // acceptRequest() {},
+    // completeRequest() {}
     // VAction(id, ty) {
     //   consola.success(id, ty)
     // }

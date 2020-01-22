@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <h5 class="card-header text-left">Add Driver</h5>
+    <h5 class="card-header text-left">Edit Driver</h5>
     <!-- IsCreating() == 'false' ? 'Add Driver' : 'Edit Driver' -->
     <div class="card-body">
       <form @submit.prevent="submitForm">
@@ -14,12 +14,11 @@
               }"
               type="text"
               class="form-control"
+              required
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
               <span v-if="!$v.firstname.required">first name is required</span>
-              <span v-if="!$v.firstname.minLength">first name must have at least {{ $v.firstname.$params.minLength.min }} letters. </span>
-              <!-- <span v-if="!$v.firstname.mixLength">first name must have at most {{ $v.firstname.$params.maxLength.max }} letters. </span> -->
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -31,11 +30,11 @@
               }"
               type="text"
               class="form-control"
+              required
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
               <span v-if="!$v.lastname.required">Last name is required</span>
-              <span v-if="!$v.lastname.minLength">Last name must have at least {{ $v.lastname.$params.minLength.min }} letters. </span>
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -47,11 +46,11 @@
               }"
               type="email"
               class="form-control"
+              required
             />
-            <!-- <div class="valid-feedback">Your Email is valid!</div> -->
+            <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
               <span v-if="!$v.email.required">Email is required</span>
-              <span v-if="!$v.email.isUnique">Give email in format eg: ali@gmail.com</span>
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -63,11 +62,11 @@
               }"
               type="password"
               class="form-control"
+              required
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
               <span v-if="!$v.password.required">Password is required</span>
-              <span v-if="!$v.password.minLength">Password must contain atleast {{ $v.password.$params.minLength.min }} characters. </span>
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -75,19 +74,16 @@
             <input
               v-model.trim="$v.mobileNo.$model"
               :class="{
-                'is-invalid': $v.mobileNo.$error
+                //'is-invalid': $v.mobileNo.$error
               }"
               type="number"
               class="form-control"
-              placeholder="eg: 923153132322   12-digits"
+              placeholder="923153132322 - 12 digits"
+              required
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
               <span v-if="!$v.mobileNo.required">Mobile Number is required</span>
-              <span v-if="!$v.mobileNo.minLength"
-                >Must be in the format 923153132322 and must have {{ $v.mobileNo.$params.minLength.min }} digits.
-              </span>
-              <span v-if="!$v.mobileNo.maxLength">Mobile Number Must not have more than {{ $v.mobileNo.$params.maxLength.max }} digits. </span>
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -99,13 +95,11 @@
               }"
               type="number"
               class="form-control"
-              placeholder="eg: 4220180941174    13-digits"
+              required
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
               <span v-if="!$v.cnicNo.required">CNIC Number is required</span>
-              <span v-if="!$v.cnicNo.minLength">Must have {{ $v.cnicNo.$params.minLength.min }} digits. </span>
-              <span v-if="!$v.cnicNo.maxLength">Mobile Number Must not have more than {{ 13 }} digits. </span>
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -115,19 +109,13 @@
               :class="{
                 'is-invalid': $v.drivingLicenceNo.$error
               }"
-              type="text"
+              type="number"
               class="form-control"
-              placeholder="eg: 4220180941174#768"
+              required
             />
             <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
             <div class="invalid-feedback">
-              <span v-if="!$v.drivingLicenceNo.required">Driving License Number is required</span>
-              <span v-if="!$v.drivingLicenceNo.minLength"
-                >Must have {{ $v.drivingLicenceNo.$params.minLength.min }} digits with # before last 3 digits.
-              </span>
-              <span v-if="!$v.drivingLicenceNo.maxLength"
-                >Mobile Number Must not have more than {{ $v.drivingLicenceNo.$params.maxLength.max }} digits including #.
-              </span>
+              <span v-if="!$v.drivingLicenceNo.required">CNIC Number is required</span>
             </div>
           </div>
           <div class="form-group col-md-6">
@@ -139,6 +127,7 @@
                 'is-invalid': $v.vehicleType.$error,
                 'is-valid': !$v.vehicleType.$invalid
               }"
+              required
             >
               <option v-for="vehicle in vehicleTypeList" :key="vehicle">
                 {{ vehicle }}
@@ -157,6 +146,7 @@
                 'is-invalid': $v.adda.$error
               }"
               class="form-control"
+              required
             >
               <option v-for="ada in adda_list" :key="ada.id">{{ ada }}</option>
             </select>
@@ -166,16 +156,16 @@
             </div>
           </div>
         </div>
-        <button type="submit" class="btn btn-sm btn-primary float-right">submit {{ submitstatus }}</button>
-        <!-- <b-button variant="primary" size="sm" class="float-right" @click="editDriver">
-          Edit river
-        </b-button> -->
+        <!-- <button type="submit" class="btn btn-sm btn-primary float-right">submit {{ submitstatus }}</button> -->
+        <b-button variant="primary" size="sm" class="float-right" @click="editDriver">
+          Edit Driver
+        </b-button>
       </form>
     </div>
   </div>
 </template>
 <script>
-import { required, minLength, maxLength, between, email } from 'vuelidate/lib/validators'
+import { required } from 'vuelidate/lib/validators'
 import consola from 'consola'
 import firebase from '@/plugins/firebase'
 import { auth, DB } from '~/plugins/firebase.js'
@@ -212,47 +202,25 @@ export default {
   },
   validations: {
     firstname: {
-      required,
-      minLength: minLength(3)
+      required
     },
     lastname: {
-      required,
-      minLength: minLength(3)
+      required
     },
     email: {
-      required,
-      email,
-      isUnique(value) {
-        // if (value === '') return true
-
-        // eslint-disable-next-line
-        var email_regex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
-
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(email_regex.test(value))
-          }, 350 + Math.random() * 300)
-        })
-      }
+      required
     },
     password: {
-      required,
-      minLength: minLength(6)
+      required
     },
     mobileNo: {
-      required,
-      minLength: minLength(12),
-      maxLength: maxLength(12)
+      required
     },
     cnicNo: {
-      required,
-      minLength: minLength(13),
-      maxLength: maxLength(13)
+      required
     },
     drivingLicenceNo: {
-      required,
-      minLength: minLength(16),
-      maxLength: maxLength(16)
+      required
     },
     vehicleType: {
       required
@@ -265,41 +233,36 @@ export default {
     submitForm() {
       const userid = firebase.auth().currentUser.uid
       console.log(userid)
-      this.$v.$touch()
-      if (this.$v.$invalid) {
-        this.submitstatus = 'Fail'
-      } else {
-        consola.success({
-          uid: userid,
-          first_name: this.firstname,
-          last_name: this.lastname,
-          email: this.email,
-          mob_no: this.mobileNo,
-          password: this.password,
-          vehicle: this.vehicleType,
-          cnic_no: this.cnicNo,
-          driving_license: this.drivingLicenceNo,
-          adda_ref: this.adda
-        })
-        this.$store.dispatch('add_driver', {
-          uid: userid,
-          first_name: this.firstname,
-          last_name: this.lastname,
-          email: this.email,
-          mob_no: this.mobileNo,
-          password: this.password,
-          vehicle: this.vehicleType,
-          cnic_no: this.cnicNo,
-          driving_license: this.drivingLicenceNo,
-          adda_ref: this.adda
-        })
+      consola.success({
+        uid: userid,
+        first_name: this.firstname,
+        last_name: this.lastname,
+        email: this.email,
+        mob_no: this.mobileNo,
+        password: this.password,
+        vehicle: this.vehicleType,
+        cnic_no: this.cnicNo,
+        driving_license: this.drivingLicenceNo,
+        adda_ref: this.adda
+      })
+      this.$store.dispatch('add_driver', {
+        uid: userid,
+        first_name: this.firstname,
+        last_name: this.lastname,
+        email: this.email,
+        mob_no: this.mobileNo,
+        password: this.password,
+        vehicle: this.vehicleType,
+        cnic_no: this.cnicNo,
+        driving_license: this.drivingLicenceNo,
+        adda_ref: this.adda
+      })
 
-        this.submitstatus = 'Success'
-        location.href = 'http://localhost:3000/vendor/drivers'
-        // this.$router.push({
-        //   path: '/vendor/drivers'
-        // })
-      }
+      this.submitstatus = 'Success'
+      location.href = 'http://localhost:3000/vendor/drivers'
+      // this.$router.push({
+      //   path: '/vendor/drivers'
+      // })
     }
   },
   editDriver() {
@@ -330,24 +293,25 @@ export default {
       adda_ref: this.adda
     })
   },
+
   IsCreating() {
     return this.$route.params.id ? 'true' : 'false'
   },
   created() {
-    // DB.ref('users')
-    //   .child(this.$route.params.id)
-    //   .once('value')
-    //   .then((snap) => {
-    //     console.log(snap.val())
-    //     this.firstname = snap.val().first_name
-    //     this.lastname = snap.val().last_name
-    //     this.mobileNo = snap.val().mob_no
-    //     this.email = snap.val().email
-    //     this.cnicNo = snap.val().cnic_no
-    //     this.drivingLicenceNo = snap.val().driving_license
-    //     this.adda = snap.val().adda_ref
-    //     this.vehicleType = snap.val().vehicle
-    //   })
+    DB.ref('users')
+      .child(this.$route.params.id)
+      .once('value')
+      .then((snap) => {
+        console.log(snap.val())
+        this.firstname = snap.val().first_name
+        this.lastname = snap.val().last_name
+        this.mobileNo = snap.val().mob_no
+        this.email = snap.val().email
+        this.cnicNo = snap.val().cnic_no
+        this.drivingLicenceNo = snap.val().driving_license
+        this.adda = snap.val().adda_ref
+        this.vehicleType = snap.val().vehicle
+      })
     this.$store.dispatch('get_VechilesList')
     this.$store.dispatch('get_adda_list')
   }
