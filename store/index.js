@@ -136,7 +136,7 @@ const createStore = () => {
         })
       },
       add_driver({ commit }, data) {
-        alert(data)
+        // alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
             .post('https://localhost:4443/test/add_vendor_driver', data)
@@ -466,26 +466,27 @@ const createStore = () => {
 
             snap.forEach((ele) => {
               // consola.success(ele.val())
-              // if (ele.val().status === 'completed' || ele.val().status === 'cancel') {
-              DB.ref('users')
-                .child(ele.val().clientId)
-                .once('value')
-                .then((userSnap) => {
-                  payload.push({
-                    ID: ele.key,
-                    Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
-                    Client_Name: userSnap.child('first_name').val() + ' ' + userSnap.child('last_name').val(),
-                    Request_Date: ele.val().requDate,
-                    Origin: ele.val().orgText,
-                    Destination: ele.val().desText,
-                    // Is_Hire: ele.val().isHire,
-                    Vehicle_Number: ele.val().vehicleId,
-                    Price: ele.val().price,
-                    Commission: ele.val().comission,
-                    Status: ele.val().status
+              if (ele.val().status === 'complete' || ele.val().status === 'cancel') {
+                console.log('hII')
+                DB.ref('users')
+                  .child(ele.val().clientId)
+                  .once('value')
+                  .then((userSnap) => {
+                    payload.push({
+                      ID: ele.key,
+                      Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                      Client_Name: userSnap.child('first_name').val() + ' ' + userSnap.child('last_name').val(),
+                      Request_Date: ele.val().requDate,
+                      Origin: ele.val().orgText,
+                      Destination: ele.val().desText,
+                      // Is_Hire: ele.val().isHire,
+                      Vehicle_Number: ele.val().vehicleId,
+                      Price: ele.val().price,
+                      Commission: ele.val().comission,
+                      Status: ele.val().status
+                    })
                   })
-                  // }
-                })
+              }
             })
 
             commit('setAllJobs', payload)

@@ -55,7 +55,7 @@
         <p style="color:red">{{ this.submitstatus }}</p>
 
         <div class="form-group">
-          <input @click="Login" type="button" name="btn" value="Login" class="btn btn-outline-danger float-right" />
+          <input @click="Login" type="button" name="btn" value="Login" class="btn btn-outline-primary float-right" />
         </div>
       </form>
     </div>
@@ -108,7 +108,7 @@ body {
   background: #000 !important;
 }
 .card {
-  border: 1px solid #28a745;
+  border: 1px solid #4285f4;
 }
 .card-login {
   margin-top: 130px;
@@ -128,7 +128,7 @@ body {
 }
 
 .input-group-prepend span {
-  background-color: #ff0000;
+  background-color: #4285f4;
   color: #fff;
   border: 0 !important;
 }
@@ -144,22 +144,22 @@ input:focus {
 
 .login_btn:hover {
   color: #fff;
-  background-color: #ff0000;
+  background-color: #4285f4;
 }
 
 .btn-outline-danger {
   color: #fff;
   font-size: 18px;
-  background-color: #28a745;
+  background-color: #4285f4;
   background-image: none;
-  border-color: #28a745;
+  border-color: #4285f4;
 }
 
 .form-control {
-  color: #28a745;
+  color: #4285f4;
   background-color: transparent;
   background-clip: padding-box;
-  border: 1px solid #28a745;
+  border: 1px solid #4285f4;
   border-radius: 0;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }

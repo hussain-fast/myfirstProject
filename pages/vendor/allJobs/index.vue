@@ -22,8 +22,6 @@
           responsive
           bordered
           hover
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
           sort-icon-left
           :filter="filter"
           :current-page="currentPage"
@@ -31,7 +29,7 @@
           :fields="fields"
           :items="itemss"
         ></b-table>
-        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+        <b-pagination v-model="currentPage" :total-rows="rowss" :per-page="perPage" aria-controls="my-table"></b-pagination>
       </b-col>
     </b-row>
   </div>

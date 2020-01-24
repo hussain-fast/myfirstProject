@@ -27,6 +27,7 @@
             <label>Vehicle Number</label>
             <input
               type="text"
+              disabled
               class="form-control"
               v-model.trim="$v.vehicleNumber.$model"
               :class="{

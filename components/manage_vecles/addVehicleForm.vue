@@ -40,11 +40,33 @@
           </div>
           <div class="form-group col-md-6">
             <label>Model Year</label>
-            <input type="text" class="form-control" v-model="vehicleModel" />
+            <input
+              type="text"
+              class="form-control"
+              v-model.trim="$v.vehicleModel.$model"
+              :class="{
+                'is-invalid': $v.vehicleModel.$error
+              }"
+            />
+            <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
+            <div class="invalid-feedback">
+              <span v-if="!$v.vehicleModel.required">Vehicle vehicleModel is required</span>
+            </div>
           </div>
           <div class="form-group col-md-6">
             <label>Vehicle Make</label>
-            <input type="text" class="form-control" v-model="vehicleMake" />
+            <input
+              type="text"
+              class="form-control"
+              v-model.trim="$v.vehicleMake.$model"
+              :class="{
+                'is-invalid': $v.vehicleMake.$error
+              }"
+            />
+            <!-- <div class="valid-feedback">Your vehicle number is valid!</div> -->
+            <div class="invalid-feedback">
+              <span v-if="!$v.vehicleMake.required">Vehicle vehicle Make is required</span>
+            </div>
           </div>
         </div>
         <button type="submit" class="btn btn-sm btn-primary float-right">submit {{ submitstatus }}</button>
@@ -96,6 +118,12 @@ export default {
       required
     },
     vehicleNumber: {
+      required
+    },
+    vehicleModel: {
+      required
+    },
+    vehicleMake: {
       required
     }
   },
