@@ -11,8 +11,8 @@
     </b-card-body>
     <b-card-footer footer-class="cardFoot">
       <div class="mt-3 clearfix">
-        <b-button size="sm" @click="Save" variant="success" class="float-right">Add</b-button>
-        <b-button size="sm" @click="reset" variant="info" class="float-right">Reset</b-button>
+        <b-button size="sm" @click="Save" variant="success" class="float-right">Update</b-button>
+        <!-- <b-button size="sm" @click="reset" variant="info" class="float-right">Reset</b-button> -->
       </div>
     </b-card-footer>
   </b-card>

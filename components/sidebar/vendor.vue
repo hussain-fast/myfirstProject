@@ -8,9 +8,9 @@
       </div> -->
     </div>
     <ul class="list-unstyled components">
-      <li>
+      <!-- <li>
         <nuxt-link to="/vendor">Dashboard</nuxt-link>
-      </li>
+      </li> -->
       <li>
         <nuxt-link to="/vendor/vehicles">Manage Vehicles</nuxt-link>
         <!-- <a href="/vendor/vehicles">Manage Vehicles</a> -->

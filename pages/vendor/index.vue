@@ -3,7 +3,10 @@
     <h5>vendor</h5>
     <b-row>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00a65a !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -18,7 +21,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #0073b7 !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #0073b7 !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -33,7 +39,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #f56954 !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #f56954 !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -48,7 +57,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #f39c12 !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #f39c12 !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -63,7 +75,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #222222 !important;  color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #222222 !important;  color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -78,7 +93,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00a65a !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -93,7 +111,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #f39c12 !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #f39c12 !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -108,7 +129,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00c0ef !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00c0ef !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -123,7 +147,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00a65a !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -138,7 +165,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #f56954 !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #f56954 !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -154,7 +184,10 @@
       </div>
       <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-green">
-          <div class="inner text-center" style="background-color: #00a65a !important; color: white;">
+          <div
+            class="inner text-center"
+            style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+          >
             <h3>
               <template v-if="true">{{ '20' }}</template>
             </h3>
@@ -168,7 +201,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00a65a !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -183,7 +219,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00a65a !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -198,7 +237,10 @@
         </div>
       </div>
       <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green" style="background-color: #00a65a !important; color: white;">
+        <div
+          class="small-box bg-green"
+          style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+        >
           <div class="inner text-center">
             <h3>
               <template v-if="true">{{ '20' }}</template>
@@ -214,7 +256,10 @@
       </div>
       <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-green">
-          <div class="inner text-center" style="background-color: #00a65a !important; color: white;">
+          <div
+            class="inner text-center"
+            style="background-color: #00a65a !important; color: white; padding-bottom:5px; padding-top:5px; margin-bottom:10px;"
+          >
             <h3>
               <template v-if="true">{{ '20' }}</template>
             </h3>

@@ -46,7 +46,7 @@
       @filtered="onFiltered"
       :fields="fields"
       :items="items"
-      @row-clicked="goToProfile(items)"
+      @row-clicked="myRowClickHandler"
     ></b-table>
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
     <!-- <b-modal ref="my-modal" title="Enter following information">
@@ -70,6 +70,7 @@
   </div>
 </template>
 <script>
+import consola from 'consola'
 export default {
   name: 'Vendor',
   layout: 'vendor',
@@ -88,65 +89,66 @@ export default {
       fields: [
         { key: 'Created_At', sortable: true },
         'Driver_Name',
-        'Mobile_Number',
-        'Vehicle_Type',
-        'Origin',
-        { key: 'Balance', sortable: true },
+        'Mobile_No',
         'Email',
         'CNIC',
-        'Action',
+        'Vehicle_Type',
+        'Adda_Ref',
+        { key: 'Balance', sortable: true },
+        'Blocked',
+        'Offline',
         'Status'
       ],
-      items: [
-        {
-          Created_At: '06-12-2019',
-          Driver_Name: 'Shahid',
-          Mobile_Number: '03334240436',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Balance: 'Rs:5000',
-          Email: 'shahid@gmail.com',
-          CNIC: '43301-8049115-7',
-          Action: 'Active',
-          Status: 'Unblocked'
-        },
-        {
-          Created_At: '02-12-2019',
-          Driver_Name: 'Karim',
-          Mobile_Number: '03334240436',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Balance: 'Rs:3000',
-          Email: 'shahid@gmail.com',
-          CNIC: '43301-8049115-7',
-          Action: 'Active',
-          Status: 'blocked'
-        },
-        {
-          Created_At: '08-12-2019',
-          Driver_Name: 'Rahim',
-          Mobile_Number: '03334240436',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Balance: 'Rs:1000',
-          Email: 'shahid@gmail.com',
-          CNIC: '43301-8049115-7',
-          Action: 'Active',
-          Status: 'blocked'
-        },
-        {
-          Created_At: '03-12-2019',
-          Driver_Name: 'Shahid',
-          Mobile_Number: '03334240436',
-          Vehicle_Type: '22 Wheeler',
-          Origin: 'Karachi',
-          Balance: 'Rs:4000',
-          Email: 'shahid@gmail.com',
-          CNIC: '43301-8049115-7',
-          Action: 'inactive',
-          Status: 'Unblocked'
-        }
-      ],
+      // items: [
+      //   {
+      //     Created_At: '06-12-2019',
+      //     Driver_Name: 'Shahid',
+      //     Mobile_Number: '03334240436',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Balance: 'Rs:5000',
+      //     Email: 'shahid@gmail.com',
+      //     CNIC: '43301-8049115-7',
+      //     Action: 'Active',
+      //     Status: 'Unblocked'
+      //   },
+      //   {
+      //     Created_At: '02-12-2019',
+      //     Driver_Name: 'Karim',
+      //     Mobile_Number: '03334240436',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Balance: 'Rs:3000',
+      //     Email: 'shahid@gmail.com',
+      //     CNIC: '43301-8049115-7',
+      //     Action: 'Active',
+      //     Status: 'blocked'
+      //   },
+      //   {
+      //     Created_At: '08-12-2019',
+      //     Driver_Name: 'Rahim',
+      //     Mobile_Number: '03334240436',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Balance: 'Rs:1000',
+      //     Email: 'shahid@gmail.com',
+      //     CNIC: '43301-8049115-7',
+      //     Action: 'Active',
+      //     Status: 'blocked'
+      //   },
+      //   {
+      //     Created_At: '03-12-2019',
+      //     Driver_Name: 'Shahid',
+      //     Mobile_Number: '03334240436',
+      //     Vehicle_Type: '22 Wheeler',
+      //     Origin: 'Karachi',
+      //     Balance: 'Rs:4000',
+      //     Email: 'shahid@gmail.com',
+      //     CNIC: '43301-8049115-7',
+      //     Action: 'inactive',
+      //     Status: 'Unblocked'
+      //   }
+      // ],
       selectedOrigin: null,
       originOptions: [
         { value: null, text: 'Please select origin' },
@@ -166,6 +168,18 @@ export default {
       ]
     }
   },
+  computed: {
+    rows() {
+      return this.items.length
+    },
+    items() {
+      return this.$store.state.VendorDrivers
+    }
+  },
+  beforeCreate() {
+    this.$store.dispatch('get_my_drivers')
+    consola.info('Before Create')
+  },
   mounted() {
     // Set the initial number of items
     this.totalRows = this.items.length
@@ -176,16 +190,12 @@ export default {
       this.totalRows = filteredItems.length
       this.currentPage = 1
     },
-    goToProfile(item) {
-      // How to get the selected row id to update it with the information in the popup?
-      this.selected = item
-
+    myRowClickHandler(items) {
+      this.selected = items
+      const id = items.ID
       this.$router.push({
-        path: '/vendor/driver_profile'
+        path: '/vendor/driver_profile/'
       })
-
-      // this.$refs['my-modal'].show()
-      // this.$refs['my-modal'].hide();
     }
   }
 }

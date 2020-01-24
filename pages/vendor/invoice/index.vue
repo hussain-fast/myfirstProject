@@ -101,23 +101,23 @@
                               <tbody>
                                 <tr>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">Created Request</td>
-                                  <td style="border: 2px solid;padding: 5px;text-align:left;">{{ '12:55 PM 21/Dec/2018' }}</td>
+                                  <td style="border: 2px solid;padding: 5px;text-align:left;">{{ this.createdAt }}</td>
                                 </tr>
                                 <tr>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">Origin</td>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">
-                                    {{ 'Unnamed Road Moosa Colony Musa Colony Gulberg Town' }}
+                                    {{ this.orgtext }}
                                   </td>
                                 </tr>
                                 <tr>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">Destination</td>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">
-                                    {{ 'iPlot R 42 Sector 15-A Sector 15 A 2 Buffer Zone' }}
+                                    {{ this.desText }}
                                   </td>
                                 </tr>
                                 <tr>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">Vehicle Required</td>
-                                  <td style="border: 2px solid;padding: 5px;text-align:left;">{{ 'Pickup' }}</td>
+                                  <td style="border: 2px solid;padding: 5px;text-align:left;">{{ this.vecType }}</td>
                                 </tr>
                                 <tr>
                                   <td style="border: 2px solid;padding: 5px;text-align:left;">Est. Time</td>
@@ -160,9 +160,9 @@
                                   <td style="border: 2px solid;padding: 5px;text-align:center;">
                                     From({{ 'origin' }}) To({{ 'destination' }}) User({{ 'userName' }}) Driver({{ 'driverName' }})
                                   </td>
-                                  <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.{{ 'Rs.1837 ' }}</td>
+                                  <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.{{ this.price }}</td>
                                   <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.0</td>
-                                  <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.{{ 'Rs.1837' }}</td>
+                                  <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.{{ this.price }}</td>
                                   <!-- <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.{{ 'invData.inv_data.amount' }}</td>
                                   <td style="border: 2px solid;padding: 5px;text-align:center;">Rs.{{ 'invData.inv_data.discountPrice' }}</td> -->
                                 </tr>
@@ -187,7 +187,7 @@
                         </tr>
                         <tr>
                           <td style="border-left: 0px solid #fcd519;padding-left: 9px;float: right;margin-right: 369px;margin-top: -40px;">
-                            <h4>Email:&nbsp;<a>roadioapppak@gmail.com</a></h4>
+                            <h4>email:&nbsp;<a>roadioapppak@gmail.com</a></h4>
                           </td>
                         </tr>
                         <tr>
@@ -213,23 +213,40 @@
   </div>
 </template>
 <script>
+import Vuex from 'vuex'
+import consola from 'consola'
+import moment from 'moment'
+import { auth, DB } from '~/plugins/firebase.js'
 export default {
   name: 'Vendor',
   layout: 'vendor',
   meta: { type: 'vendor' },
   data() {
     return {
-      items: [
-        {
-          text: 'Dashboard',
-          to: '/vendor'
-        },
-        {
-          text: 'Invoice',
-          active: true
-        }
-      ]
+      orgtext: '',
+      createdAt: '',
+      desText: '',
+      price: '',
+      comission: '',
+      vecType: ''
     }
-  }
+  },
+  computed: {},
+  beforeCreate() {
+    DB.ref('requests/heavyVehicles')
+      .child(this.$route.params.id)
+      .once('value')
+      .then((snap) => {
+        console.log(snap.val())
+        this.orgtext = snap.val().orgText
+        this.createdAt = new Date(moment(snap.val().createdAt).format('DD MMM YYYY'))
+        this.desText = snap.val().desText
+        this.price = snap.val().price
+        this.comission = snap.val().comission
+        this.vecType = snap.val().vecType
+      })
+  },
+  mounted() {},
+  methods: {}
 }
 </script>

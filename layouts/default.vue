@@ -1,5 +1,5 @@
 <template>
-  <div class="container bg-black">
+  <div class="bg-black">
     <nuxt />
   </div>
 </template>
@@ -61,5 +61,6 @@ body {
   width: 100%;
   height: 100vh;
   padding: 1px;
+  background-color: steelblue;
 }
 </style>
