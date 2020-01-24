@@ -5,7 +5,7 @@
         <!--  <img src="" class="w-75" alt="Logo" />-->
       </span>
       <br />
-      <span class="logo_title mt-5">Login</span>
+      <span class="logo_title mt-5">Vendor Login</span>
     </div>
     <div class="card-body">
       <form @submit.prevent="Login" action method="post">
@@ -111,8 +111,8 @@ body {
   border: 1px solid #4285f4;
 }
 .card-login {
-  margin-top: 130px;
-  margin-left: 500px !important;
+  margin-top: 150px;
+  margin-left: 400px !important;
   padding: 18px;
   max-width: 30rem;
 }

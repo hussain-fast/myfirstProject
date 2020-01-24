@@ -27,7 +27,7 @@ const createStore = () => {
       VendorLiveVehicles: [], // this is for fetching vendors live vehicle list for pending requets
       VendorDriversList: {}, // it is for make vehicle live popup
       VendorLiveDriversList: {},
-      MyLiveVehicles: {},
+      MyLiveVehicles: [],
       adda_list: []
     },
     getters: {
@@ -92,7 +92,7 @@ const createStore = () => {
           .equalTo(state.user.uid)
           .once('value')
           .then((snap) => {
-            const payload = {}
+            const payload = []
 
             snap.forEach((ele) => {
               // console.log(ele.val().availability)
@@ -130,7 +130,7 @@ const createStore = () => {
       },
       get_adda_list({ commit }) {
         return new Promise((resolve, reject) => {
-          this.$axios.get('https://localhost:4443/test/adda_list').then((payload) => {
+          this.$axios.get('https://ziprelay.net:4443/api/adda_list').then((payload) => {
             commit('setAddaList', payload.data)
           })
         })
@@ -139,7 +139,7 @@ const createStore = () => {
         // alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/add_vendor_driver', data)
+            .post('https://ziprelay.net:4443/api/add_vendor_driver', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -150,7 +150,7 @@ const createStore = () => {
         alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/update_vendor_driver', data)
+            .post('https://ziprelay.net:4443/api/update_vendor_driver', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -161,7 +161,7 @@ const createStore = () => {
         // alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/change_vendor_vehicle_availability', data)
+            .post('https://ziprelay.net:4443/api/change_vendor_vehicle_availability', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -172,7 +172,7 @@ const createStore = () => {
         alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/change_vendor_vehicle_availability', data)
+            .post('https://ziprelay.net:4443/api/change_vendor_vehicle_availability', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -183,7 +183,7 @@ const createStore = () => {
         alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/allot_vehicle_by_vendor_heavy_vehicle_req', data)
+            .post('https://ziprelay.net:4443/api/allot_vehicle_by_vendor_heavy_vehicle_req', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -194,7 +194,7 @@ const createStore = () => {
         alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/accept_by_vendor_heavy_vehicle_req', data)
+            .post('https://ziprelay.net:4443/api/accept_by_vendor_heavy_vehicle_req', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -205,7 +205,7 @@ const createStore = () => {
         alert(data)
         return new Promise((resolve, reject) => {
           this.$axios
-            .post('https://localhost:4443/test/complete_heavy_vehicle_req', data)
+            .post('https://ziprelay.net:4443/api/complete_heavy_vehicle_req', data)
             .then(({ data }) => {
               consola.success(data)
             })
@@ -218,7 +218,7 @@ const createStore = () => {
         { vehicleId, name, v_number, v_model, v_make, uid }
       ) {
         return new Promise((resolve, reject) => {
-          this.$axios.post('https://localhost:4443/test/add_vendor_vehicle', {
+          this.$axios.post('https://ziprelay.net:4443/api/add_vendor_vehicle', {
             vehicleId,
             name,
             v_number,
@@ -234,7 +234,7 @@ const createStore = () => {
         { vehicleId, name, v_number, v_model, v_make, uid, availability }
       ) {
         return new Promise((resolve, reject) => {
-          this.$axios.post('https://localhost:4443/test/update_vendor_vehicle', {
+          this.$axios.post('https://ziprelay.net:4443/api/update_vendor_vehicle', {
             vehicleId,
             name,
             v_number,
@@ -526,8 +526,6 @@ const createStore = () => {
       },
       get_new_jobs({ commit, state }) {
         DB.ref('requests/heavyVehicles')
-          .orderByChild('vendorId')
-          .equalTo(state.user.uid)
           .once('value')
           .then((snap) => {
             const payload = []
@@ -537,7 +535,32 @@ const createStore = () => {
               //   case 'pending':
               //   case 'accept':
               //   case 'allot': {
-              if (ele.val().status === 'pending' || ele.val().status === 'accept' || ele.val().status === 'allot') {
+              if (ele.val().status === 'pending' || ele.val().status === 'allot') {
+                DB.ref('users')
+                  .child(ele.val().clientId)
+                  .once('value')
+                  .then((userSnap) => {
+                    console.log(ele.val())
+                    payload.push({
+                      ID: ele.key,
+                      vendorId: state.user.uid,
+                      Created_At: moment(ele.val().createdAt).format('MM-DD-YYYY'),
+                      accept_time: moment(ele.val().accept_time).format('MM-DD-YYYY'),
+                      allot_time: moment(ele.val().allot_time).format('MM-DD-YYYY'),
+                      completedAt: moment(ele.val().completedAt).format('MM-DD-YYYY'),
+                      Client_Name: userSnap.child('first_name').val() + ' ' + userSnap.child('last_name').val(),
+                      Client_No: userSnap.child('mob_no').val(),
+                      Request_Date: ele.val().requDate,
+                      Origin: ele.val().orgText,
+                      Destination: ele.val().desText,
+                      Is_Hire: ele.val().isHire,
+                      Vehicle_Id: ele.val().vehicleId,
+                      Price: ele.val().price,
+                      Commission: ele.val().comission,
+                      Status: ele.val().status
+                    })
+                  })
+              } else if (ele.val().status === 'allot' && ele.val().vendorId === state.user.uid) {
                 DB.ref('users')
                   .child(ele.val().clientId)
                   .once('value')

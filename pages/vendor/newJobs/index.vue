@@ -272,7 +272,7 @@ export default {
     // }
   },
   created() {
-    this.$store.dispatch('get_VendorLiveDriversList')
+    this.$store.dispatch('get_MyLiveVehicles')
   },
   beforeCreate() {
     this.$store.dispatch('get_new_jobs')
@@ -301,12 +301,14 @@ export default {
   },
   methods: {
     // when staus = pending
+
     allotVehicle() {
       // alert('vehicle id' + this.Vehicle_Name)
+      alert(firebase.auth().currentUser.uid)
       this.$store.dispatch('allot_heavy_vehicle_to_pending_request', {
         reqId: this.selected.ID,
         vehicleId: this.Vehicle_Name,
-        uid: this.selected.vendorId
+        uid: firebase.auth().currentUser.uid
         // destination: this.Destination,
         // driverId: this.Driver_Name,
         // price: this.Price,

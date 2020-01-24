@@ -194,7 +194,7 @@ export default {
       this.selected = items
       const id = items.ID
       this.$router.push({
-        path: '/vendor/driver_profile/' + id
+        path: '/vendor/driver_profile/'
       })
     }
   }

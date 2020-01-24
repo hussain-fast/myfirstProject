@@ -41,11 +41,31 @@
           </div>
           <div class="form-group col-md-6">
             <label>Model Year</label>
-            <input type="text" class="form-control" v-model="vehicleModel" />
+            <input
+              type="text"
+              class="form-control"
+              v-model="$v.vehicleModel.$model"
+              :class="{
+                'is-invalid': $v.vehicleModel.$error
+              }"
+            />
+            <div class="invalid-feedback">
+              <span v-if="!$v.vehicleModel.required">Vehicle vehicle Model is required</span>
+            </div>
           </div>
           <div class="form-group col-md-6">
             <label>Vehicle Make</label>
-            <input type="text" class="form-control" v-model="vehicleMake" />
+            <input
+              type="text"
+              class="form-control"
+              v-model="$v.vehicleMake.$model"
+              :class="{
+                'is-invalid': $v.vehicleMake.$error
+              }"
+            />
+            <div class="invalid-feedback">
+              <span v-if="!$v.vehicleMake.required">Vehicle vehicle Make is required</span>
+            </div>
           </div>
         </div>
         <!-- <button type="submit" class="btn btn-sm btn-primary float-right">submit {{ submitstatus }}</button> -->
@@ -98,6 +118,12 @@ export default {
     },
     vehicleNumber: {
       required
+    },
+    vehicleModel: {
+      required
+    },
+    vehicleMake: {
+      required
     }
   },
   methods: {
@@ -127,23 +153,28 @@ export default {
     editVehicle() {
       const userid = firebase.auth().currentUser.uid
       //   alert('-' + this.vehicleNumber.toUpperCase())
-      consola.success({
-        vehicleId: '-' + this.vehicleNumber.toUpperCase(),
-        name: this.list[this.vehicleType].name,
-        v_number: this.vehicleNumber,
-        v_model: this.vehicleModel,
-        v_make: this.vehicleMake,
-        uid: userid
-      })
-      this.$store.dispatch('edit_vendor_vehicle', {
-        vehicleId: '-' + this.vehicleNumber.toUpperCase(),
-        name: this.list[this.vehicleType].name,
-        v_number: this.vehicleNumber,
-        v_model: this.vehicleModel,
-        v_make: this.vehicleMake,
-        uid: userid,
-        availability: false
-      })
+      this.$v.$touch()
+      if (this.$v.$invalid) {
+        this.submitstatus = 'Fail'
+      } else {
+        consola.success({
+          vehicleId: '-' + this.vehicleNumber.toUpperCase(),
+          name: this.list[this.vehicleType].name,
+          v_number: this.vehicleNumber,
+          v_model: this.vehicleModel,
+          v_make: this.vehicleMake,
+          uid: userid
+        })
+        this.$store.dispatch('edit_vendor_vehicle', {
+          vehicleId: '-' + this.vehicleNumber.toUpperCase(),
+          name: this.list[this.vehicleType].name,
+          v_number: this.vehicleNumber,
+          v_model: this.vehicleModel,
+          v_make: this.vehicleMake,
+          uid: userid,
+          availability: false
+        })
+      }
     },
     IsCreating() {
       return this.$route.params.id ? 'true' : 'false'
